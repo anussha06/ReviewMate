@@ -1,0 +1,28 @@
+# Environment and credentials
+.env
+.env.local
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Pytest & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# OS specific
+Thumbs.db
+Desktop.ini
+.DS_Store
