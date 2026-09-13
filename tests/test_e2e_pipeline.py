@@ -121,18 +121,19 @@ def test_analyze_full_pipeline_mocked(client):
 
 def test_post_review_endpoint(client):
     # Case 1: Missing token
-    res_no_tok = client.post(
-        "/api/post-review",
-        json={
-            "owner": "owner",
-            "repo": "repo",
-            "pr_number": 1,
-            "summary_markdown": "Test review",
-            "github_token": "",
-        },
-    )
-    assert res_no_tok.status_code == 400
-    assert "GitHub token is required" in res_no_tok.json()["detail"]
+    with patch.object(settings, "github_token", ""):
+        res_no_tok = client.post(
+            "/api/post-review",
+            json={
+                "owner": "owner",
+                "repo": "repo",
+                "pr_number": 1,
+                "summary_markdown": "Test review",
+                "github_token": "",
+            },
+        )
+        assert res_no_tok.status_code == 400
+        assert "GitHub token is required" in res_no_tok.json()["detail"]
 
     # Case 2: Success with mock
     with patch("app.main.post_summary_comment", new_callable=AsyncMock) as p_post:

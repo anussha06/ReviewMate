@@ -180,7 +180,7 @@ async def post_summary_comment(
         ValueError: If no GitHub token is provided or summary is empty.
         PermissionError / RuntimeError: If GitHub returns an error.
     """
-    tok = token.strip() if token else settings.github_token
+    tok = token.strip() if token is not None else settings.github_token
     if not tok:
         raise ValueError(
             "GitHub token is required to post a review comment. "
