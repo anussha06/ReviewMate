@@ -1,5 +1,10 @@
 // ReviewMate AI — Frontend Client Logic
 
+// API Base URL configuration:
+// - Default '' uses same-origin relative paths (ideal when FastAPI serves frontend).
+// - If frontend is hosted separately (Vercel/Netlify), set window.API_BASE_URL = 'https://<your-render-app>.onrender.com'
+const API_BASE = (window.API_BASE_URL || '').replace(/\/+$/, '');
+
 let currentReview = null;
 let activeSeverityFilter = 'ALL';
 let activeAgentFilter = 'ALL';
@@ -140,7 +145,7 @@ async function handleAnalyzeSubmit(e) {
       payload.github_token = customToken;
     }
 
-    const response = await fetch('/api/analyze', {
+    const response = await fetch(`${API_BASE}/api/analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -408,7 +413,7 @@ async function handlePostReview() {
       payload.github_token = customToken;
     }
 
-    const response = await fetch('/api/post-review', {
+    const response = await fetch(`${API_BASE}/api/post-review`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -483,7 +488,7 @@ async function loadRecentHistory() {
   const historyList = document.getElementById('historyList');
 
   try {
-    const resp = await fetch('/api/history?limit=15');
+    const resp = await fetch(`${API_BASE}/api/history?limit=15`);
     if (!resp.ok) return;
 
     const items = await resp.json();

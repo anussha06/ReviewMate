@@ -36,7 +36,7 @@ class Settings:
         self.groq_api_key: str = os.getenv("GROQ_API_KEY", "").strip()
         self.groq_model: str = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b").strip()
         self.github_token: str = os.getenv("GITHUB_TOKEN", "").strip()
-        self.host: str = os.getenv("HOST", "127.0.0.1").strip()
+        self.host: str = os.getenv("HOST", "0.0.0.0").strip()
         self.port: int = int(os.getenv("PORT", "8000"))
         self.db_path: str = os.getenv("DB_PATH", str(_BASE_DIR / "reviewmate.db"))
         self.context_token_limit: int = int(os.getenv("CONTEXT_TOKEN_LIMIT", "6000"))
