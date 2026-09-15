@@ -2,8 +2,17 @@
 
 // API Base URL configuration:
 // - Default '' uses same-origin relative paths (ideal when FastAPI serves frontend).
-// - If frontend is hosted separately (Vercel/Netlify), set window.API_BASE_URL = 'https://<your-render-app>.onrender.com'
-const API_BASE = (window.API_BASE_URL || '').replace(/\/+$/, '');
+// - If frontend is hosted on Vercel, enter your Render URL in the settings box or set window.API_BASE_URL
+function getApiBase() {
+  if (window.API_BASE_URL) return window.API_BASE_URL.replace(/\/+$/, '');
+  const inputEl = document.getElementById('backendUrlInput');
+  if (inputEl && inputEl.value.trim()) {
+    return inputEl.value.trim().replace(/\/+$/, '');
+  }
+  const stored = localStorage.getItem('reviewmate_api_url');
+  if (stored) return stored.replace(/\/+$/, '');
+  return '';
+}
 
 let currentReview = null;
 let activeSeverityFilter = 'ALL';
@@ -25,6 +34,21 @@ function initElements() {
   const closeHistoryBtn = document.getElementById('closeHistoryBtn');
   const drawerOverlay = document.getElementById('drawerOverlay');
   const agentFilterSelect = document.getElementById('agentFilterSelect');
+  const backendUrlInput = document.getElementById('backendUrlInput');
+
+  // Load saved backend URL if any
+  if (backendUrlInput) {
+    const savedBackend = localStorage.getItem('reviewmate_api_url') || '';
+    if (savedBackend) backendUrlInput.value = savedBackend;
+    backendUrlInput.addEventListener('input', (e) => {
+      const val = e.target.value.trim();
+      if (val) {
+        localStorage.setItem('reviewmate_api_url', val);
+      } else {
+        localStorage.removeItem('reviewmate_api_url');
+      }
+    });
+  }
 
   // Form submission
   form.addEventListener('submit', handleAnalyzeSubmit);
@@ -139,13 +163,25 @@ async function handleAnalyzeSubmit(e) {
     }
   }, 1200);
 
+  const apiBase = getApiBase();
+  if (!apiBase && window.location.hostname.includes('vercel.app')) {
+    showAlert("Please expand 'Settings' above and enter your deployed Render backend URL.", "error");
+    const settingsAcc = document.getElementById('settingsAccordion');
+    if (settingsAcc) settingsAcc.open = true;
+    analyzeBtn.disabled = false;
+    btnText.textContent = 'Analyze PR';
+    spinner.classList.add('hidden');
+    progressSection.classList.add('hidden');
+    return;
+  }
+
   try {
     const payload = { pr_url: prUrl };
     if (customToken) {
       payload.github_token = customToken;
     }
 
-    const response = await fetch(`${API_BASE}/api/analyze`, {
+    const response = await fetch(`${apiBase}/api/analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -413,7 +449,8 @@ async function handlePostReview() {
       payload.github_token = customToken;
     }
 
-    const response = await fetch(`${API_BASE}/api/post-review`, {
+    const apiBase = getApiBase();
+    const response = await fetch(`${apiBase}/api/post-review`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -488,7 +525,8 @@ async function loadRecentHistory() {
   const historyList = document.getElementById('historyList');
 
   try {
-    const resp = await fetch(`${API_BASE}/api/history?limit=15`);
+    const apiBase = getApiBase();
+    const resp = await fetch(`${apiBase}/api/history?limit=15`);
     if (!resp.ok) return;
 
     const items = await resp.json();

@@ -94,10 +94,22 @@
           <button type="button" class="example-chip" data-url="https://github.com/django/django/pull/17000">django/django#17000</button>
         </div>
 
-        <!-- Optional token expander -->
-        <details class="token-accordion">
-          <summary class="token-summary">Advanced: Custom GitHub Token (Override)</summary>
+        <!-- Optional settings expander -->
+        <details class="token-accordion" id="settingsAccordion">
+          <summary class="token-summary">⚙️ Settings: Backend API URL & Custom GitHub Token</summary>
+          <div class="token-field" style="margin-bottom: 12px;">
+            <label class="input-label" style="font-size: 0.78rem;">Render Backend API URL</label>
+            <input
+              type="url"
+              id="backendUrlInput"
+              class="text-input text-input-sm"
+              placeholder="https://reviewmate-ai.onrender.com (Leave blank for same-origin)"
+              autocomplete="off"
+            >
+            <p class="token-hint">Enter your deployed Render backend URL when using Vercel or external hosting.</p>
+          </div>
           <div class="token-field">
+            <label class="input-label" style="font-size: 0.78rem;">Custom GitHub Token (Override)</label>
             <input
               type="password"
               id="customTokenInput"
